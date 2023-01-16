@@ -1,109 +1,108 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TaskMenager.Models;
+using TaskMenager.Repositories;
 
 namespace TaskMenager.Controllers
 {
     public class TaskController : Controller
     {
-        private static IList<TaskModel> tasks = new List<TaskModel>()
+        private readonly ITaskRepository _taskRepository;
+        public TaskController(ITaskRepository taskRepository)
         {
-            new TaskModel()
-            {
-                TaskId = 1,
-                Name = "Wizyta u mechanika",
-                Description = "Jesteśmy umówieni na godzinę 16:30. Wymiana sprzęgła.",
-                Done = false
-            },
-            new TaskModel()
-            {
-                TaskId = 2,
-                Name = "Zakupy w castoramie",
-                Description = "Zakup mebli ogrodowych. Spotkanie o 12:30 w niedziele",
-                Done = false
-            },
-            new TaskModel()
-            {
-                TaskId = 3,
-                Name = "Odwiedzić dziadków",
-                Description = "Obiad o godzinie 12 w poniedziałek",
-                Done = false
-            }
-        };
+            this._taskRepository = taskRepository;
+        }
 
-        // GET: TaskController
+        //private static IList<TaskModel> tasks = new List<TaskModel>()
+        //{
+        //    new TaskModel()
+        //    {
+        //        TaskId = 1,
+        //        Name = "Wizyta u mechanika",
+        //        Description = "Jesteśmy umówieni na godzinę 16:30. Wymiana sprzęgła.",
+        //        Done = false
+        //    },
+        //    new TaskModel()
+        //    {
+        //        TaskId = 2,
+        //        Name = "Zakupy w castoramie",
+        //        Description = "Zakup mebli ogrodowych. Spotkanie o 12:30 w niedziele",
+        //        Done = false
+        //    },
+        //    new TaskModel()
+        //    {
+        //        TaskId = 3,
+        //        Name = "Odwiedzić dziadków",
+        //        Description = "Obiad o godzinie 12 w poniedziałek",
+        //        Done = false
+        //    }
+        //};
+
+        // GET: Task
         public ActionResult Index()
         {
-            return View(tasks);
+            return View(_taskRepository.GetAllActive());
         }
 
-        // GET: TaskController/Details/5
+        // GET: Task/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            return View(_taskRepository.Get(id));
         }
 
-        // GET: TaskController/Create
+        // GET: Task/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new TaskModel());
         }
 
-        // POST: TaskController/Create
+        // POST: Task/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public ActionResult Create(TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _taskRepository.Add(taskModel);
+            return RedirectToAction(nameof(Index));
         }
 
-        // GET: TaskController/Edit/5
+        // GET: Task/Edit/5
         public ActionResult Edit(int id)
         {
-            return View();
+            return View(_taskRepository.Get(id));
         }
 
-        // POST: TaskController/Edit/5
+        // POST: Task/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
+        public ActionResult Edit(int id, TaskModel taskModel)
         {
-            try
-            {
+            _taskRepository.Update(id, taskModel);
                 return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
         }
 
-        // GET: TaskController/Delete/5
+        // GET: Task/Delete/5
         public ActionResult Delete(int id)
         {
-            return View();
+            return View(_taskRepository.Get(id));
         }
 
-        // POST: TaskController/Delete/5
+        // POST: Task/Delete/5
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public ActionResult Delete(int id, TaskModel taskModel)
         {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
+            _taskRepository.Delete(id);
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Task/Done/5
+        public ActionResult Done(int id)
+        {
+            TaskModel task = _taskRepository.Get(id);
+            task.Done = true;
+            _taskRepository.Update(id, task);
+
+            return RedirectToAction(nameof(Index));
         }
     }
 }

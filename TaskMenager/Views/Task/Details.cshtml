@@ -1,0 +1,40 @@
+﻿@model TaskMenager.Models.TaskModel
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Szczegóły zadania</h1>
+
+<div>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.TaskId)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.TaskId)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+    </dl>
+</div>
+<div>
+    
+    
+    <div class="form-group mt-3">
+        @Html.ActionLink("Edytuj", "Edit", new { id = Model.TaskId }, new { @class = "btn btn-warning"})
+        <a style="margin-left: 15px" asp-action="Index">Powrót</a>
+    </div>
+</div>
